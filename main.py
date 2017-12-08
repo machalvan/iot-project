@@ -1,4 +1,6 @@
 from tkinter import *
+from tkinter import filedialog
+import csv
 
 
 class Window(Frame):
@@ -18,6 +20,26 @@ class Window(Frame):
 
     def import_data(self):
         print("Import button was pressed!")
+        filePath = filedialog.askopenfilename(filetypes=(("CSV files", "*.csv"), ("All files", "*.*")))
+
+        with open(filePath, 'r')as csvfile:
+            readCSV = csv.reader(csvfile, delimiter=',')
+
+            temperature = []
+            humidity = []
+            brightness = []
+
+            for row in readCSV:
+                tempV = row[0]
+                humiV = row[1]
+                brigV = row[2]
+
+                temperature.append(tempV)
+                humidity.append(humiV)
+                brightness.append(brigV)
+            print("fyllt lista")
+            print(temperature)
+
 
 root = Tk()
 root.geometry("400x300")
