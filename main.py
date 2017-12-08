@@ -39,6 +39,7 @@ class Window(Frame):
                 brightness.append(brigV)
             print("fyllt lista")
             print(temperature)
+            print("test")
 
 
 root = Tk()
