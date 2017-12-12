@@ -1,11 +1,13 @@
 from tkinter import *
 import tkinter as tk
 from tkinter import filedialog
+from tkinter import ttk
 import matplotlib
 matplotlib.use("TkAgg")
 
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
 from matplotlib.figure import Figure
+
 import csv
 
 
@@ -13,6 +15,7 @@ class Window(tk.Tk):
 
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
+        tk.Tk.wm_title(self, "Data Visualization GUI")
         #self.master = master
         #self.init_window()
 
@@ -72,7 +75,7 @@ class StartPage(tk.Frame):
         label = Label(self, text="Start Page")
         label.pack(pady=10, padx=10)
 
-        import_button = Button(self, text="Import", command=self.import_data, cursor="hand2")
+        import_button = ttk.Button(self, text="Import", command=self.import_data, cursor="hand2")
         import_button.pack()
 
     def import_data(self):
@@ -115,7 +118,7 @@ class LinePage(tk.Frame):
         self.actH = []
         self.actB = []
 
-        buttonTest = tk.Button(self, text="test", command=lambda: self.linear())
+        buttonTest = ttk.Button(self, text="test", command=lambda: self.linear())
         buttonTest.pack()
 
     def linear(self):
@@ -127,6 +130,7 @@ class LinePage(tk.Frame):
         canvas = FigureCanvasTkAgg(fig, self)
         canvas.show()
         canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=True)
+
 
     def getLists(self):
         self.actT = self.controller.getT()
