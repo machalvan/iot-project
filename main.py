@@ -135,7 +135,7 @@ class LinePage(tk.Frame):
         x_var = self.actT
         y_var = self.actB
 
-        fig = Figure(figsize=(5, 5), dpi=100)
+        fig = plt.figure(figsize=(5, 5), dpi=100)
 
         plot = fig.add_subplot(111)
         plot.plot([x_var], [y_var], 'ro')
@@ -153,6 +153,7 @@ class LinePage(tk.Frame):
 
 
 
+
     def get_lists(self):
         self.actT = self.controller.get_t()
         self.actH = self.controller.get_h()
@@ -162,5 +163,5 @@ class LinePage(tk.Frame):
 
 
 app = Window()
-app.geometry("600x400")
+app.geometry("600x600")
 app.mainloop()
