@@ -7,8 +7,37 @@ matplotlib.use("TkAgg")
 
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
 from matplotlib.figure import Figure
+from matplotlib import pyplot as plt
 
 import csv
+
+
+def import_data(self):
+    print("Import button was pressed!")
+    filePath = filedialog.askopenfilename(filetypes=(("CSV files", "*.csv"), ("All files", "*.*")))
+
+    with open(filePath, 'r')as csvfile:
+        readCSV = csv.reader(csvfile, delimiter=',')
+
+        temperature = []
+        humidity = []
+        brightness = []
+
+        for row in readCSV:
+            tempV = row[0]
+            humiV = row[1]
+            brigV = row[2]
+
+            temperature.append(tempV)
+            humidity.append(humiV)
+            brightness.append(brigV)
+        print("fyllt lista")
+        print(temperature)
+
+        self.controller.up_lists(temperature, humidity, brightness)
+
+    self.controller.show_frame(LinePage)
+
 
 
 class Window(tk.Tk):
@@ -43,20 +72,20 @@ class Window(tk.Tk):
         frame = self.frames[cont]
         frame.tkraise()
 
-    def upLists(self, tem, hum, bri):
+    def up_lists(self, tem, hum, bri):
         print("upplist")
         self.actT = tem
         self.actH = hum
         self.actB = bri
 
-    def getT(self):
+    def get_t(self):
         print("getT")
         return self.actT
 
-    def getH(self):
+    def get_h(self):
         return self.actH
 
-    def getB(self):
+    def get_b(self):
         return self.actB
 
 
@@ -75,34 +104,10 @@ class StartPage(tk.Frame):
         label = Label(self, text="Start Page")
         label.pack(pady=10, padx=10)
 
-        import_button = ttk.Button(self, text="Import", command=self.import_data, cursor="hand2")
+        import_button = ttk.Button(self, text="Import", command=lambda: import_data(self), cursor="hand2")
         import_button.pack()
 
-    def import_data(self):
-        print("Import button was pressed!")
-        filePath = filedialog.askopenfilename(filetypes=(("CSV files", "*.csv"), ("All files", "*.*")))
 
-        with open(filePath, 'r')as csvfile:
-            readCSV = csv.reader(csvfile, delimiter=',')
-
-            temperature = []
-            humidity = []
-            brightness = []
-
-            for row in readCSV:
-                tempV = row[0]
-                humiV = row[1]
-                brigV = row[2]
-
-                temperature.append(tempV)
-                humidity.append(humiV)
-                brightness.append(brigV)
-            print("fyllt lista")
-            print(temperature)
-
-            self.controller.upLists(temperature, humidity, brightness)
-
-        self.controller.show_frame(LinePage)
 
 
 
@@ -118,24 +123,40 @@ class LinePage(tk.Frame):
         self.actH = []
         self.actB = []
 
-        buttonTest = ttk.Button(self, text="test", command=lambda: self.linear())
-        buttonTest.pack()
+        import_button = ttk.Button(self, text="Import", command=lambda: import_data(self), cursor="hand2")
+        import_button.pack()
 
-    def linear(self):
-        self.getLists()
+        scatter_button = ttk.Button(self, text="Show scatter diagram", command=lambda: self.scatter())
+        scatter_button.pack()
+
+    def scatter(self):
+        self.get_lists()
+
+        x_var = self.actT
+        y_var = self.actB
+
         fig = Figure(figsize=(5, 5), dpi=100)
+
         plot = fig.add_subplot(111)
-        plot.plot([self.actT], [self.actB], 'ro')
+        plot.plot([x_var], [y_var], 'ro')
 
         canvas = FigureCanvasTkAgg(fig, self)
         canvas.show()
         canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=True)
 
+        x_label = "Temperature"
+        y_label = "Brightness"
+        plt.xlabel(x_label)
+        plt.ylabel(y_label)
+        plt.title('Scatter diagram')
 
-    def getLists(self):
-        self.actT = self.controller.getT()
-        self.actH = self.controller.getH()
-        self.actB = self.controller.getB()
+
+
+
+    def get_lists(self):
+        self.actT = self.controller.get_t()
+        self.actH = self.controller.get_h()
+        self.actB = self.controller.get_b()
 
 #root = Tk()
 
