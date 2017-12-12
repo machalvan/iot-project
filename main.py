@@ -88,6 +88,14 @@ class Window(tk.Tk):
     def get_b(self):
         return self.actB
 
+    def customGet(self, string):
+        if (string == "Temperature"):
+            return self.get_t()
+        elif (string == "Brightness"):
+            return self.get_b()
+        elif (string == "Humidity"):
+            return self.get_h()
+
 
     #def init_window(self):
         #self.master.title("IOT")
@@ -112,6 +120,7 @@ class StartPage(tk.Frame):
 
 
 
+
 class LinePage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
@@ -119,45 +128,91 @@ class LinePage(tk.Frame):
         label = Label(self, text="Linear graph")
         label.pack()
 
-        self.actT = []
-        self.actH = []
-        self.actB = []
+        self.used = False
 
         import_button = ttk.Button(self, text="Import", command=lambda: import_data(self), cursor="hand2")
         import_button.pack()
+
+        self.comboBoxes()
 
         scatter_button = ttk.Button(self, text="Show scatter diagram", command=lambda: self.scatter())
         scatter_button.pack()
 
     def scatter(self):
-        self.get_lists()
 
-        x_var = self.actT
-        y_var = self.actB
+        print(self.box1.get())
+        x_var = self.get_list(self.box1.get())
+        y_var = self.get_list(self.box2.get())
+        print(x_var)
 
         fig = plt.figure(figsize=(5, 5), dpi=100)
 
         plot = fig.add_subplot(111)
+
+
+        #ska finnas för att rensa bort den tidigare plotten och skriva ut den nya, kan dock inte få det att funka
+        if(self.used==True):
+            plot.clear()
+            print("test5")
+
         plot.plot([x_var], [y_var], 'ro')
+
+        self.used = True
 
         canvas = FigureCanvasTkAgg(fig, self)
         canvas.show()
         canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=True)
 
-        x_label = "Temperature"
-        y_label = "Brightness"
+        x_label = self.box1.get()
+        y_label = self.box2.get()
         plt.xlabel(x_label)
         plt.ylabel(y_label)
         plt.title('Scatter diagram')
 
 
+    def comboBoxes(self):
+        self.box_value = StringVar()
+        self.labelx = Label(self, text="X")
+        self.labely = Label(self, text="Y")
+        self.box1 = ttk.Combobox(self)
+        self.box1['values'] = ('Temperature', 'Brightness', 'Humidity')
+        self.box1.current(1)
+        self.box2 = ttk.Combobox(self)
+        self.box2['values'] = ('Temperature', 'Brightness', 'Humidity')
+        self.box2.current(0)
+        self.labelx.pack()
+        self.box1.pack()
+        self.labely.pack()
+        self.box2.pack()
+
+    def get_list(self, string):
+        return self.controller.customGet(string)
 
 
+class PiePage(tk.Frame):#lär inte bli att vi använder såvida vi inte hittar något sätt att fixa de på
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        self.controller = controller
+        label = Label(self, text="Linear graph")
+        label.pack()
 
-    def get_lists(self):
-        self.actT = self.controller.get_t()
-        self.actH = self.controller.get_h()
-        self.actB = self.controller.get_b()
+        self.labelx = Label(self, text="X")
+        self.labely = Label(self, text="Y")
+        self.box1 = ttk.Combobox(self)
+        self.box1['values'] = ('Temperature', 'Brightness', 'Humidity')
+        self.box1.current(1)
+        self.box1.pack()
+
+    def get_list(self, string):
+        return self.controller.customGet(string)
+
+    def calculatePieData(self):
+        #ta fram högsta och lägsta talet, ta fram mellan skillnaden och sedan dela upp mellanskillnaden i 5 lika stora delar, sen plotta en ny lista av med dessa indelningar
+        tempL = self.get_list(self.box1.get())
+        tempL.sort()
+        high = tempL[0]
+        low = tempL[-1]
+
 
 #root = Tk()
 
