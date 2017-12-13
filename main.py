@@ -140,6 +140,8 @@ class LinePage(tk.Frame):
     def update(self):
         print("Updating")
 
+        plot.clear()
+
         x_label = self.box1.get()
         y_label = self.box2.get()
 
@@ -149,7 +151,6 @@ class LinePage(tk.Frame):
         plt.xlabel(x_label)
         plt.ylabel(y_label)
 
-        plot.clear()
         plot.plot([x_var], [y_var], 'ro')
         self.canvas.draw()
 
