@@ -117,72 +117,81 @@ class StartPage(tk.Frame):
 
 
 
-
-
+fig = plt.figure(figsize=(5, 5), dpi=100)
+plot = fig.add_subplot(111)
 
 
 class LinePage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
+
         label = Label(self, text="Linear graph")
         label.pack()
-
-        self.used = False
 
         import_button = ttk.Button(self, text="Import", command=lambda: import_data(self), cursor="hand2")
         import_button.pack()
 
         self.comboBoxes()
 
-        scatter_button = ttk.Button(self, text="Show scatter diagram", command=lambda: self.scatter())
-        scatter_button.pack()
+        self.scatter_button = ttk.Button(self, text="Show scatter diagram", command=lambda: self.scatter())
+        self.scatter_button.pack()
 
-    def scatter(self):
-
-        print(self.box1.get())
-        x_var = self.get_list(self.box1.get())
-        y_var = self.get_list(self.box2.get())
-        print(x_var)
-
-        fig = plt.figure(figsize=(5, 5), dpi=100)
-
-        plot = fig.add_subplot(111)
-
-
-        #ska finnas för att rensa bort den tidigare plotten och skriva ut den nya, kan dock inte få det att funka
-        if(self.used==True):
-            plot.clear()
-            print("test5")
-
-        plot.plot([x_var], [y_var], 'ro')
-
-        self.used = True
-
-        canvas = FigureCanvasTkAgg(fig, self)
-        canvas.show()
-        canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=True)
+    def update(self):
+        print("Updating")
 
         x_label = self.box1.get()
         y_label = self.box2.get()
+
+        x_var = self.get_list(x_label)
+        y_var = self.get_list(y_label)
+
+        plt.xlabel(x_label)
+        plt.ylabel(y_label)
+
+        plot.clear()
+        plot.plot([x_var], [y_var], 'ro')
+        self.canvas.draw()
+
+    def scatter(self):
+        update_button = ttk.Button(self, text="Update", command=lambda: self.update())
+        update_button.pack()
+
+        x_label = self.box1.get()
+        y_label = self.box2.get()
+
+        x_var = self.get_list(x_label)
+        y_var = self.get_list(y_label)
+        
         plt.xlabel(x_label)
         plt.ylabel(y_label)
         plt.title('Scatter diagram')
 
+        plot.plot([x_var], [y_var], 'ro')
+
+        self.canvas = FigureCanvasTkAgg(fig, self)
+        self.canvas.show()
+        self.canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=True)
+
+        self.scatter_button.destroy()
+
 
     def comboBoxes(self):
         self.box_value = StringVar()
-        self.labelx = Label(self, text="X")
-        self.labely = Label(self, text="Y")
+        labelx = Label(self, text="X")
+        labely = Label(self, text="Y")
+
         self.box1 = ttk.Combobox(self)
         self.box1['values'] = ('Temperature', 'Brightness', 'Humidity')
         self.box1.current(1)
+
         self.box2 = ttk.Combobox(self)
         self.box2['values'] = ('Temperature', 'Brightness', 'Humidity')
         self.box2.current(0)
-        self.labelx.pack()
+
+        labelx.pack()
         self.box1.pack()
-        self.labely.pack()
+        labely.pack()
         self.box2.pack()
 
     def get_list(self, string):
