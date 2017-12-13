@@ -36,7 +36,7 @@ def import_data(self):
 
         self.controller.up_lists(temperature, humidity, brightness)
 
-    self.controller.show_frame(LinePage)
+    self.controller.show_frame(SumPage)
 
 
 
@@ -61,7 +61,7 @@ class Window(tk.Tk):
 
         self.frames = {}
 
-        for F in (StartPage, LinePage):
+        for F in (StartPage, LinePage, SumPage):
             frame = F(container, self)
             self.frames[F] = frame
             frame.grid(row=0, column=0, sticky="nsew")
@@ -126,11 +126,11 @@ class LinePage(tk.Frame):
         tk.Frame.__init__(self, parent)
         self.controller = controller
 
-        label = Label(self, text="Linear graph")
-        label.pack()
-
         import_button = ttk.Button(self, text="Import", command=lambda: import_data(self), cursor="hand2")
         import_button.pack()
+
+        label = Label(self, text="Linear graph")
+        label.pack()
 
         self.comboBoxes()
 
@@ -197,6 +197,54 @@ class LinePage(tk.Frame):
 
     def get_list(self, string):
         return self.controller.customGet(string)
+
+
+class SumPage(tk.Frame):
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        self.controller = controller
+
+        self.tempT = []
+        self.tempH = []
+        self.tempB = []
+
+        self.get_lists()
+
+        import_button = ttk.Button(self, text="Import", command=lambda: import_data(self), cursor="hand2")
+        import_button.pack()
+
+        import_button = ttk.Button(self, text="Scatter", command=lambda: self.controller.show_frame(LinePage), cursor="hand2")
+        import_button.pack()
+
+        label = Label(self, text="Summary")
+        label.pack()
+
+        entries = Label(self, text="Total entries: " + str(len(self.tempT)))
+        entries.pack()
+
+        self.meanT = Label(self, text="Mean temperature: " + str(self.calc_mean(self.tempT)))
+        self.meanH = Label(self, text="Mean humidity: " + str(self.calc_mean(self.tempH)))
+        self.meanB = Label(self, text="Mean brightness: " + str(self.calc_mean(self.tempB)))
+        self.meanT.pack()
+        self.meanH.pack()
+        self.meanB.pack()
+
+
+    def get_lists(self):
+        self.tempT = self.controller.get_t()
+        self.tempH = self.controller.get_h()
+        self.tempB = self.controller.get_b()
+        print("testlists")
+
+    def calc_mean(self, target):
+        total=0
+        divide = len(target)
+        if(divide == 0):
+            divide = 1
+        for number in target:
+            total += number
+        return total/divide
+
 
 
 class PiePage(tk.Frame):#lär inte bli att vi använder såvida vi inte hittar något sätt att fixa de på
