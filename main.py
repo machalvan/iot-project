@@ -4,6 +4,9 @@ from tkinter import filedialog
 from tkinter import ttk
 import matplotlib
 matplotlib.use("TkAgg")
+import pandas as pd
+from pandas import DataFrame
+import numpy as np
 
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
 from matplotlib.figure import Figure
@@ -61,7 +64,7 @@ class Window(tk.Tk):
 
         self.frames = {}
 
-        for F in (StartPage, LinePage):
+        for F in (StartPage, LinePage, PiePage):
             frame = F(container, self)
             self.frames[F] = frame
             frame.grid(row=0, column=0, sticky="nsew")
@@ -113,6 +116,10 @@ class StartPage(tk.Frame):
             scatter_button = ttk.Button(self, text="Scatter", command=lambda: self.controller.show_frame(LinePage),
                                         cursor="hand2")
             scatter_button.pack()
+
+            pie_button = ttk.Button(self, text="Pie chart", command=lambda: self.controller.show_frame(PiePage),
+                                        cursor="hand2")
+            pie_button.pack()
 
             self.summery_displayed = True
 
@@ -221,18 +228,34 @@ class PiePage(tk.Frame):#lär inte bli att vi använder såvida vi inte hittar n
         self.labely = Label(self, text="Y")
         self.box1 = ttk.Combobox(self)
         self.box1['values'] = ('Temperature', 'Brightness', 'Humidity')
-        self.box1.current(1)
+        self.box1.current(0)
         self.box1.pack()
+
+        plot_button = ttk.Button(self, text="Plot", command=lambda: self.calculatePieData(),
+                                    cursor="hand2")
+        plot_button.pack()
+
 
     def get_list(self, string):
         return self.controller.customGet(string)
 
     def calculatePieData(self):
-        #ta fram högsta och lägsta talet, ta fram mellan skillnaden och sedan dela upp mellanskillnaden i 5 lika stora delar, sen plotta en ny lista av med dessa indelningar
+
         tempL = self.get_list(self.box1.get())
-        tempL.sort()
-        high = tempL[0]
-        low = tempL[-1]
+        if(self.box1.get() == 'Temperature'):
+            #bins = [-30, -15, 0, 15, 30, 45]
+            #test = pd.cut(tempL, bins)
+            tempT = pd.DataFrame(np.array(tempL), columns=list("a"))
+            #tempT['bins'] = pd.cut(tempT['a'], bins=[int(-30), int(-15), 0, 15, 30, 45], labels=["-30_-15", "-16_0", "1_15", "16_30", "31_45"])
+            #test = test.groupby([''])
+
+
+        #a = tempT.groupby(bins).size()
+        print(tempT)
+        #print(tempT)
+
+
+
 
 
 #root = Tk()
