@@ -244,9 +244,14 @@ class PiePage(tk.Frame):#lär inte bli att vi använder såvida vi inte hittar n
         df = pd.DataFrame(raw_data, columns=variables)
 
         variable = self.box1.get()
-        df['bins'] = pd.cut(df[variable],
-                            bins=[int(-30), int(-15), 0, 15, 30, 45],
-                            labels=["-30 - -15", "-14 - 0", "1 - 15", "16 - 30", "31 - 45"])
+        if(variable == 'Temperature'):
+            df['bins'] = pd.cut(df[variable],
+                                bins=[int(-30), int(-15), 0, 15, 30, 45],
+                                labels=["-30 - -15", "-14 - 0", "1 - 15", "16 - 30", "31 - 45"])
+        else:
+            df['bins'] = pd.cut(df[variable],
+                                bins=[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+                                labels=["0 - 10", "11 - 20", "21 - 30", "31 - 40", "41 - 50", "51 - 60", "61 - 70", "71 - 80", "81 - 90", "91 - 100"])
         plot = df.groupby('bins').size()
         print(plot)
         plot.plot.pie(figsize=(4, 4), startangle=90, counterclock=False)
