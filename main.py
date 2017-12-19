@@ -33,9 +33,9 @@ def import_data(self):
             humiV = row[1]
             brigV = row[2]
 
-            data1.append(tempV)
-            data2.append(humiV)
-            data3.append(brigV)
+            data1.append(int(tempV))
+            data2.append(int(humiV))
+            data3.append(int(brigV))
         print("fyllt lista")
 
     self.display_summery()
@@ -241,17 +241,23 @@ class PiePage(tk.Frame):#lär inte bli att vi använder såvida vi inte hittar n
 
     def calculatePieData(self):
 
-        tempL = self.get_list(self.box1.get())
+        raw_data = {'Temperature': data1, 'Brightness': data2, 'Humidity': data3}
+        df = pd.DataFrame(raw_data, columns= ['Temperature', 'Brightness', 'Humidity'])
+
+        #tempL = self.get_list(self.box1.get())
         if(self.box1.get() == 'Temperature'):
             #bins = [-30, -15, 0, 15, 30, 45]
             #test = pd.cut(tempL, bins)
-            tempT = pd.DataFrame(np.array(tempL), columns=list("a"))
-            #tempT['bins'] = pd.cut(tempT['a'], bins=[int(-30), int(-15), 0, 15, 30, 45], labels=["-30_-15", "-16_0", "1_15", "16_30", "31_45"])
+            #tempT = pd.DataFrame(np.array(tempL), columns=list("a"))
+            df['bins'] = pd.cut(df['Temperature'], bins=[int(-30), int(-15), 0, 15, 30, 45], labels=["-30_-15", "-16_0", "1_15", "16_30", "31_45"])
+            a = df.groupby('bins').size()
             #test = test.groupby([''])
 
 
         #a = tempT.groupby(bins).size()
-        print(tempT)
+        print(a)
+
+        a.plot.pie(figsize=(4,4))
         #print(tempT)
 
 
