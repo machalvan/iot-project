@@ -11,6 +11,12 @@ import numpy as np
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
 from matplotlib.figure import Figure
 from matplotlib import pyplot as plt
+from matplotlib import style
+style.use("ggplot")
+from sklearn.cluster import KMeans
+from collections import Counter
+from mpl_toolkits.mplot3d import Axes3D
+from pylab import *
 
 import csv
 
@@ -72,7 +78,7 @@ class Window(tk.Tk):
 
         self.frames = {}
 
-        for F in (StartPage, LinePage, PiePage):
+        for F in (StartPage, LinePage, PiePage, ClusterPage):
             frame = F(container, self)
             self.frames[F] = frame
             frame.grid(row=0, column=0, sticky="nsew")
@@ -122,6 +128,10 @@ class StartPage(tk.Frame):
             pie_button = ttk.Button(self, text="Pie chart", command=lambda: self.controller.show_frame(PiePage),
                                         cursor="hand2")
             pie_button.pack()
+
+            cluster_button = ttk.Button(self, text="Cluster chart", command=lambda: self.controller.show_frame(ClusterPage),
+                                    cursor="hand2")
+            cluster_button.pack()
 
             self.summery_displayed = True
 
@@ -217,15 +227,13 @@ class LinePage(tk.Frame):
 
 
 
-class PiePage(tk.Frame):#lär inte bli att vi använder såvida vi inte hittar något sätt att fixa de på
+class PiePage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
         label = Label(self, text="Linear graph")
         label.pack()
 
-        self.labelx = Label(self, text="X")
-        self.labely = Label(self, text="Y")
         self.box1 = ttk.Combobox(self)
         self.box1['values'] = ('Temperature', 'Brightness', 'Humidity')
         self.box1.current(0)
@@ -251,13 +259,56 @@ class PiePage(tk.Frame):#lär inte bli att vi använder såvida vi inte hittar n
         else:
             df['bins'] = pd.cut(df[variable],
                                 bins=[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
-                                labels=["0 - 10", "11 - 20", "21 - 30", "31 - 40", "41 - 50", "51 - 60", "61 - 70", "71 - 80", "81 - 90", "91 - 100"])
+                                labels=["0 - 10", "11 - 20", "21 - 30", "31 - 40", "41 - 50", "51 - 60", "61 - 70",
+                                        "71 - 80", "81 - 90", "91 - 100"])
         plot = df.groupby('bins').size()
         print(plot)
         plot.plot.pie(figsize=(4, 4), startangle=90, counterclock=False)
         plt.title(variable)
         plt.ylabel("")
         plt.show()
+
+class ClusterPage(tk.Frame):
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        self.controller = controller
+        label = Label(self, text="Cluster graph")
+        label.pack()
+
+        cluster_button = ttk.Button(self, text="Plot", command=lambda: self.make_cluster(),
+                                    cursor="hand2")
+        cluster_button.pack()
+
+    def fix_list(self):
+        tempL = np.column_stack((data1, data2, data3))
+        return tempL
+
+    def make_cluster(self):
+
+        X = self.fix_list()
+        cluster_num = 3
+
+        kmeans = KMeans(n_clusters=cluster_num)
+        kmeans.fit(X)
+
+        centroids = kmeans.cluster_centers_
+        labels = kmeans.labels_
+
+        color = ["g", "r", "b"]
+
+
+        fig = figure()
+        ax = fig.gca(projection='3d')
+
+        for i in range(len(X)):
+            ax.scatter(X[i][0], X[i][1], X[i][2], c=color[labels[i]])
+
+        for cluster_number in range(cluster_num):
+            ax.scatter(centroids[:, 0], centroids[:, 1], centroids[:, 2], marker="x", s=150, linewidths=5, zorder=100,
+                       c=color)
+
+        plt.show()
+
 
 
 #root = Tk()
