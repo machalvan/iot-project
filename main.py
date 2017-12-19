@@ -47,6 +47,14 @@ def clear_lists():
     data2 = []
     data3 = []
 
+def get_list(variable):
+    if variable == "Temperature":
+        return data1
+    elif variable == "Brightness":
+        return data2
+    elif variable == "Humidity":
+        return data3
+
 class Window(tk.Tk):
 
     def __init__(self, *args, **kwargs):
@@ -75,13 +83,7 @@ class Window(tk.Tk):
         frame = self.frames[cont]
         frame.tkraise()
 
-    def customGet(self, string):
-        if (string == "Temperature"):
-            return data1
-        elif (string == "Brightness"):
-            return data2
-        elif (string == "Humidity"):
-            return data3
+
 
 
 class StartPage(tk.Frame):
@@ -162,8 +164,8 @@ class LinePage(tk.Frame):
         x_label = self.box1.get()
         y_label = self.box2.get()
 
-        x_var = self.get_list(x_label)
-        y_var = self.get_list(y_label)
+        x_var = get_list(x_label)
+        y_var = get_list(y_label)
 
         plt.xlabel(x_label)
         plt.ylabel(y_label)
@@ -178,8 +180,8 @@ class LinePage(tk.Frame):
         x_label = self.box1.get()
         y_label = self.box2.get()
 
-        x_var = self.get_list(x_label)
-        y_var = self.get_list(y_label)
+        x_var = get_list(x_label)
+        y_var = get_list(y_label)
         
         plt.xlabel(x_label)
         plt.ylabel(y_label)
@@ -212,8 +214,6 @@ class LinePage(tk.Frame):
         labely.pack()
         self.box2.pack()
 
-    def get_list(self, string):
-        return self.controller.customGet(string)
 
 
 
@@ -231,37 +231,28 @@ class PiePage(tk.Frame):#lär inte bli att vi använder såvida vi inte hittar n
         self.box1.current(0)
         self.box1.pack()
 
-        plot_button = ttk.Button(self, text="Plot", command=lambda: self.calculatePieData(),
-                                    cursor="hand2")
+        plot_button = ttk.Button(self, text="Plot", command=lambda: self.calculate_pie_data(),
+                                 cursor="hand2")
         plot_button.pack()
 
 
-    def get_list(self, string):
-        return self.controller.customGet(string)
-
-    def calculatePieData(self):
+    def calculate_pie_data(self):
+        plt.close()
 
         raw_data = {'Temperature': data1, 'Brightness': data2, 'Humidity': data3}
-        df = pd.DataFrame(raw_data, columns= ['Temperature', 'Brightness', 'Humidity'])
+        variables = ['Temperature', 'Brightness', 'Humidity']
+        df = pd.DataFrame(raw_data, columns=variables)
 
-        #tempL = self.get_list(self.box1.get())
-        if(self.box1.get() == 'Temperature'):
-            #bins = [-30, -15, 0, 15, 30, 45]
-            #test = pd.cut(tempL, bins)
-            #tempT = pd.DataFrame(np.array(tempL), columns=list("a"))
-            df['bins'] = pd.cut(df['Temperature'], bins=[int(-30), int(-15), 0, 15, 30, 45], labels=["-30_-15", "-16_0", "1_15", "16_30", "31_45"])
-            a = df.groupby('bins').size()
-            #test = test.groupby([''])
-
-
-        #a = tempT.groupby(bins).size()
-        print(a)
-
-        a.plot.pie(figsize=(4,4))
-        #print(tempT)
-
-
-
+        variable = self.box1.get()
+        df['bins'] = pd.cut(df[variable],
+                            bins=[int(-30), int(-15), 0, 15, 30, 45],
+                            labels=["-30 - -15", "-14 - 0", "1 - 15", "16 - 30", "31 - 45"])
+        plot = df.groupby('bins').size()
+        print(plot)
+        plot.plot.pie(figsize=(4, 4), startangle=90, counterclock=False)
+        plt.title(variable)
+        plt.ylabel("")
+        plt.show()
 
 
 #root = Tk()
