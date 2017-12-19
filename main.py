@@ -155,18 +155,28 @@ class LinePage(tk.Frame):
         tk.Frame.__init__(self, parent)
         self.controller = controller
 
+        label = Label(self, text="Scatter plot")
+        label.pack()
+
         import_button = ttk.Button(self, text="Import", command=lambda: import_data(self), cursor="hand2")
         import_button.pack()
 
-        label = Label(self, text="Linear graph")
-        label.pack()
+        pie_button = ttk.Button(self, text="Pie chart", command=lambda: self.controller.show_frame(PiePage),
+                                cursor="hand2")
+        pie_button.pack()
+
+        cluster_button = ttk.Button(self, text="Cluster chart", command=lambda: self.controller.show_frame(ClusterPage),
+                                    cursor="hand2")
+        cluster_button.pack()
+
 
         self.comboBoxes()
 
         self.scatter_button = ttk.Button(self, text="Show scatter diagram", command=lambda: self.scatter())
         self.scatter_button.pack()
 
-    def update(self):
+
+    '''def update(self):
         print("Updating")
 
         plot.clear()
@@ -181,11 +191,11 @@ class LinePage(tk.Frame):
         plt.ylabel(y_label)
 
         plot.plot([x_var], [y_var], 'ro')
-        self.canvas.draw()
+        self.canvas.draw()'''
 
     def scatter(self):
-        update_button = ttk.Button(self, text="Update", command=lambda: self.update())
-        update_button.pack()
+        '''update_button = ttk.Button(self, text="Update", command=lambda: self.update())
+        update_button.pack()'''
 
         x_label = self.box1.get()
         y_label = self.box2.get()
@@ -198,12 +208,14 @@ class LinePage(tk.Frame):
         plt.title('Scatter diagram')
 
         plot.plot([x_var], [y_var], 'ro')
-
+        '''
         self.canvas = FigureCanvasTkAgg(fig, self)
         self.canvas.show()
         self.canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=True)
 
-        self.scatter_button.destroy()
+        self.scatter_button.destroy()'''
+        plt.show()
+
 
 
     def comboBoxes(self):
@@ -231,9 +243,23 @@ class PiePage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
-        label = Label(self, text="Linear graph")
+
+        label = Label(self, text="Pie chart")
         label.pack()
 
+        import_button = ttk.Button(self, text="Import", command=lambda: import_data(self), cursor="hand2")
+        import_button.pack()
+
+        scatter_button = ttk.Button(self, text="Scatter", command=lambda: self.controller.show_frame(LinePage),
+                                    cursor="hand2")
+        scatter_button.pack()
+
+        cluster_button = ttk.Button(self, text="Cluster chart", command=lambda: self.controller.show_frame(ClusterPage),
+                                    cursor="hand2")
+        cluster_button.pack()
+
+        label = Label(self, text="Pick element to plot.")
+        label.pack()
         self.box1 = ttk.Combobox(self)
         self.box1['values'] = ('Temperature', 'Brightness', 'Humidity')
         self.box1.current(0)
@@ -272,12 +298,28 @@ class ClusterPage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
+
         label = Label(self, text="Cluster graph")
+        label.pack()
+
+        import_button = ttk.Button(self, text="Import", command=lambda: import_data(self), cursor="hand2")
+        import_button.pack()
+
+        scatter_button = ttk.Button(self, text="Scatter", command=lambda: self.controller.show_frame(LinePage),
+                                    cursor="hand2")
+        scatter_button.pack()
+
+        pie_button = ttk.Button(self, text="Pie chart", command=lambda: self.controller.show_frame(PiePage),
+                                cursor="hand2")
+        pie_button.pack()
+
+        label = Label(self, text="The clustering will plot all the datapoints. No choices to make.")
         label.pack()
 
         cluster_button = ttk.Button(self, text="Plot", command=lambda: self.make_cluster(),
                                     cursor="hand2")
         cluster_button.pack()
+
 
     def fix_list(self):
         tempL = np.column_stack((data1, data2, data3))
@@ -286,6 +328,7 @@ class ClusterPage(tk.Frame):
     def make_cluster(self):
 
         X = self.fix_list()
+
         cluster_num = 3
 
         kmeans = KMeans(n_clusters=cluster_num)
@@ -295,7 +338,6 @@ class ClusterPage(tk.Frame):
         labels = kmeans.labels_
 
         color = ["g", "r", "b"]
-
 
         fig = figure()
         ax = fig.gca(projection='3d')
