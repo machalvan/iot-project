@@ -24,6 +24,36 @@ data1 = []
 data2 = []
 data3 = []
 
+def show_title(self, title):
+    label = Label(self, text=title, bg="gray")
+    label.pack(ipady=10, fill=X)
+
+def show_import(self):
+    import_button = ttk.Button(self, text="Import", command=lambda: import_data(self), cursor="hand2")
+    import_button.pack(anchor='w')
+
+def show_plot_buttons(self):
+    scatter_button = ttk.Button(
+        self,
+        text="Scatter",
+        command=lambda: self.controller.show_frame(LinePage), cursor="hand2")
+
+    pie_button = ttk.Button(
+        self,
+        text="Pie chart",
+        command=lambda: self.controller.show_frame(PiePage), cursor="hand2")
+
+    cluster_button = ttk.Button(
+        self,
+        text="Cluster chart",
+        command=lambda: self.controller.show_frame(ClusterPage), cursor="hand2")
+
+    scatter_button.pack(anchor='w')
+    pie_button.pack(anchor='w')
+    cluster_button.pack(anchor='w')
+
+
+
 def import_data(self):
     self.controller.show_frame(StartPage)
     print("Import button was pressed!")
@@ -98,40 +128,26 @@ class StartPage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
-        label = Label(self, text="Start Page")
-        label.pack(pady=10, padx=10)
+        show_title(self, "Start page")
 
-        import_button = ttk.Button(self, text="Import", command=lambda: import_data(self), cursor="hand2")
-        import_button.pack()
+        show_import(self)
 
 
     def display_summery(self):
         if not self.summery_displayed:
+            show_plot_buttons(self)
+
             label = Label(self, text="Summary")
-            label.pack()
-
             entries = Label(self, text="Total entries: " + str(len(data1)))
-            entries.pack()
-
             meanT = Label(self, text="Mean temperature: " + str(self.calc_mean(data1)))
             meanH = Label(self, text="Mean humidity: " + str(self.calc_mean(data2)))
             meanB = Label(self, text="Mean brightness: " + str(self.calc_mean(data3)))
 
+            label.pack()
+            entries.pack()
             meanT.pack()
             meanH.pack()
             meanB.pack()
-
-            scatter_button = ttk.Button(self, text="Scatter", command=lambda: self.controller.show_frame(LinePage),
-                                        cursor="hand2")
-            scatter_button.pack()
-
-            pie_button = ttk.Button(self, text="Pie chart", command=lambda: self.controller.show_frame(PiePage),
-                                        cursor="hand2")
-            pie_button.pack()
-
-            cluster_button = ttk.Button(self, text="Cluster chart", command=lambda: self.controller.show_frame(ClusterPage),
-                                    cursor="hand2")
-            cluster_button.pack()
 
             self.summery_displayed = True
 
@@ -155,19 +171,11 @@ class LinePage(tk.Frame):
         tk.Frame.__init__(self, parent)
         self.controller = controller
 
-        label = Label(self, text="Scatter plot")
-        label.pack()
+        show_title(self, "Scatter plot")
 
-        import_button = ttk.Button(self, text="Import", command=lambda: import_data(self), cursor="hand2")
-        import_button.pack()
+        show_import(self)
 
-        pie_button = ttk.Button(self, text="Pie chart", command=lambda: self.controller.show_frame(PiePage),
-                                cursor="hand2")
-        pie_button.pack()
-
-        cluster_button = ttk.Button(self, text="Cluster chart", command=lambda: self.controller.show_frame(ClusterPage),
-                                    cursor="hand2")
-        cluster_button.pack()
+        show_plot_buttons(self)
 
 
         self.comboBoxes()
@@ -244,19 +252,11 @@ class PiePage(tk.Frame):
         tk.Frame.__init__(self, parent)
         self.controller = controller
 
-        label = Label(self, text="Pie chart")
-        label.pack()
+        show_title(self, "Pie chart")
 
-        import_button = ttk.Button(self, text="Import", command=lambda: import_data(self), cursor="hand2")
-        import_button.pack()
+        show_import(self)
 
-        scatter_button = ttk.Button(self, text="Scatter", command=lambda: self.controller.show_frame(LinePage),
-                                    cursor="hand2")
-        scatter_button.pack()
-
-        cluster_button = ttk.Button(self, text="Cluster chart", command=lambda: self.controller.show_frame(ClusterPage),
-                                    cursor="hand2")
-        cluster_button.pack()
+        show_plot_buttons(self)
 
         label = Label(self, text="Pick element to plot.")
         label.pack()
@@ -299,19 +299,11 @@ class ClusterPage(tk.Frame):
         tk.Frame.__init__(self, parent)
         self.controller = controller
 
-        label = Label(self, text="Cluster graph")
-        label.pack()
+        show_title(self, "Cluster graph")
 
-        import_button = ttk.Button(self, text="Import", command=lambda: import_data(self), cursor="hand2")
-        import_button.pack()
+        show_import(self)
 
-        scatter_button = ttk.Button(self, text="Scatter", command=lambda: self.controller.show_frame(LinePage),
-                                    cursor="hand2")
-        scatter_button.pack()
-
-        pie_button = ttk.Button(self, text="Pie chart", command=lambda: self.controller.show_frame(PiePage),
-                                cursor="hand2")
-        pie_button.pack()
+        show_plot_buttons(self)
 
         label = Label(self, text="The clustering will plot all the datapoints. No choices to make.")
         label.pack()
@@ -357,5 +349,5 @@ class ClusterPage(tk.Frame):
 
 
 app = Window()
-app.geometry("600x600")
+app.geometry("600x600+300+10")
 app.mainloop()
