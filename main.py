@@ -162,9 +162,6 @@ class StartPage(tk.Frame):
 
 
 
-fig = plt.figure(figsize=(5, 5), dpi=100)
-plot = fig.add_subplot(111)
-
 
 class LinePage(tk.Frame):
     def __init__(self, parent, controller):
@@ -183,27 +180,8 @@ class LinePage(tk.Frame):
         self.scatter_button = ttk.Button(self, text="Show scatter diagram", command=lambda: self.scatter())
         self.scatter_button.pack()
 
-
-    '''def update(self):
-        print("Updating")
-
-        plot.clear()
-
-        x_label = self.box1.get()
-        y_label = self.box2.get()
-
-        x_var = get_list(x_label)
-        y_var = get_list(y_label)
-
-        plt.xlabel(x_label)
-        plt.ylabel(y_label)
-
-        plot.plot([x_var], [y_var], 'ro')
-        self.canvas.draw()'''
-
     def scatter(self):
-        '''update_button = ttk.Button(self, text="Update", command=lambda: self.update())
-        update_button.pack()'''
+
 
         x_label = self.box1.get()
         y_label = self.box2.get()
@@ -215,13 +193,7 @@ class LinePage(tk.Frame):
         plt.ylabel(y_label)
         plt.title('Scatter diagram')
 
-        plot.plot([x_var], [y_var], 'ro')
-        '''
-        self.canvas = FigureCanvasTkAgg(fig, self)
-        self.canvas.show()
-        self.canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=True)
-
-        self.scatter_button.destroy()'''
+        plt.plot([x_var], [y_var], 'ro')
         plt.show()
 
 
