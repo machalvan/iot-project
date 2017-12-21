@@ -33,6 +33,11 @@ def show_import(self):
     import_button.pack(anchor='w')
 
 def show_plot_buttons(self):
+    summary_button = ttk.Button(
+        self,
+        text="Summary",
+        command=lambda: self.controller.show_frame(StartPage), cursor="hand2")
+
     scatter_button = ttk.Button(
         self,
         text="Scatter",
@@ -48,6 +53,7 @@ def show_plot_buttons(self):
         text="Cluster chart",
         command=lambda: self.controller.show_frame(ClusterPage), cursor="hand2")
 
+    summary_button.pack(anchor='w')
     scatter_button.pack(anchor='w')
     pie_button.pack(anchor='w')
     cluster_button.pack(anchor='w')
@@ -96,8 +102,7 @@ class Window(tk.Tk):
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
         tk.Tk.wm_title(self, "Data Visualization GUI")
-        #self.master = master
-        #self.init_window()
+
 
         container = tk.Frame(self)
 
@@ -314,10 +319,6 @@ class ClusterPage(tk.Frame):
                        c=color)
 
         plt.show()
-
-
-
-#root = Tk()
 
 
 app = Window()
