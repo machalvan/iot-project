@@ -24,6 +24,12 @@ data1 = []
 data2 = []
 data3 = []
 
+VAR1 = "Temperature"
+VAR2 = "Humidity"
+VAR3 = "Brightness"
+
+all_vars = (VAR1, VAR2, VAR3)
+
 def show_title(self, title):
     label = Label(self, text=title, bg="gray")
     label.pack(ipady=10, fill=X)
@@ -71,13 +77,9 @@ def import_data(self):
         readCSV = csv.reader(csvfile, delimiter=',')
 
         for row in readCSV:
-            tempV = row[0]
-            humiV = row[1]
-            brigV = row[2]
-
-            data1.append(int(tempV))
-            data2.append(int(humiV))
-            data3.append(int(brigV))
+            data1.append(int(row[0]))
+            data2.append(int(row[1]))
+            data3.append(int(row[2]))
         print("fyllt lista")
 
     self.display_summery()
@@ -90,11 +92,11 @@ def clear_lists():
     data3 = []
 
 def get_list(variable):
-    if variable == "Temperature":
+    if variable == VAR1:
         return data1
-    elif variable == "Brightness":
+    elif variable == VAR2:
         return data2
-    elif variable == "Humidity":
+    elif variable == VAR3:
         return data3
 
 class Window(tk.Tk):
@@ -166,12 +168,12 @@ class StartPage(tk.Frame):
         return round(total / divide, 2)
 
 
-
-
 class LinePage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
+        self.box1 = ttk.Combobox(self)
+        self.box2 = ttk.Combobox(self)
 
         show_title(self, "Scatter plot")
 
@@ -179,15 +181,12 @@ class LinePage(tk.Frame):
 
         show_plot_buttons(self)
 
-
         self.comboBoxes()
 
         self.scatter_button = ttk.Button(self, text="Show scatter diagram", command=lambda: self.scatter())
         self.scatter_button.pack()
 
     def scatter(self):
-
-
         x_label = self.box1.get()
         y_label = self.box2.get()
 
@@ -207,24 +206,19 @@ class LinePage(tk.Frame):
 
 
     def comboBoxes(self):
-        self.box_value = StringVar()
-        labelx = Label(self, text="X")
-        labely = Label(self, text="Y")
+        label_x = Label(self, text="X")
+        label_y = Label(self, text="Y")
 
-        self.box1 = ttk.Combobox(self)
-        self.box1['values'] = ('Temperature', 'Brightness', 'Humidity')
+        self.box1['values'] = all_vars
         self.box1.current(1)
 
-        self.box2 = ttk.Combobox(self)
-        self.box2['values'] = ('Temperature', 'Brightness', 'Humidity')
+        self.box2['values'] = all_vars
         self.box2.current(0)
 
-        labelx.pack()
+        label_x.pack()
         self.box1.pack()
-        labely.pack()
+        label_y.pack()
         self.box2.pack()
-
-
 
 
 class PiePage(tk.Frame):
@@ -233,32 +227,31 @@ class PiePage(tk.Frame):
         self.controller = controller
 
         show_title(self, "Pie chart")
-
         show_import(self)
-
         show_plot_buttons(self)
 
         label = Label(self, text="Pick element to plot.")
         label.pack()
+
         self.box1 = ttk.Combobox(self)
-        self.box1['values'] = ('Temperature', 'Brightness', 'Humidity')
+        self.box1['values'] = all_vars
         self.box1.current(0)
         self.box1.pack()
 
-        plot_button = ttk.Button(self, text="Plot", command=lambda: self.calculate_pie_data(),
-                                 cursor="hand2")
+        plot_button = ttk.Button(self, text="Plot", command=lambda: self.calculate_pie_data(), cursor="hand2")
         plot_button.pack()
 
 
     def calculate_pie_data(self):
         plt.close()
 
-        raw_data = {'Temperature': data1, 'Brightness': data2, 'Humidity': data3}
-        variables = ['Temperature', 'Brightness', 'Humidity']
+        raw_data = {VAR1: data1, VAR2: data2, VAR3: data3}
+        variables = [VAR1, VAR2, VAR3]
         df = pd.DataFrame(raw_data, columns=variables)
 
         variable = self.box1.get()
-        if(variable == 'Temperature'):
+        '''
+        if variable == 'Temperature':
             df['bins'] = pd.cut(df[variable],
                                 bins=[int(-30), int(-15), 0, 15, 30, 45],
                                 labels=["-30 - -15", "-14 - 0", "1 - 15", "16 - 30", "31 - 45"])
@@ -267,6 +260,31 @@ class PiePage(tk.Frame):
                                 bins=[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
                                 labels=["0 - 10", "11 - 20", "21 - 30", "31 - 40", "41 - 50", "51 - 60", "61 - 70",
                                         "71 - 80", "81 - 90", "91 - 100"])
+        '''
+
+        df['bins'] = pd.cut(df[variable],
+                bins=[-100, -90, -80, -70, -60, -50, -40, -30, -20, -10, 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+                labels=["-100 - -91",
+                        "-90 - -81",
+                        "-80 - -71",
+                        "-70 - -61",
+                        "-60 - -51",
+                        "-50 - -41",
+                        "-40 - -31",
+                        "-30 - -21",
+                        "-20 - -11",
+                        "-10 - 0",
+                        "1 - 10",
+                        "11 - 20",
+                        "21 - 30",
+                        "31 - 40",
+                        "41 - 50",
+                        "51 - 60",
+                        "61 - 70",
+                        "71 - 80",
+                        "81 - 90",
+                        "91 - 100"])
+
         plot = df.groupby('bins').size()
         print(plot)
         plot.plot.pie(figsize=(4, 4), startangle=90, counterclock=False)
@@ -285,7 +303,7 @@ class ClusterPage(tk.Frame):
 
         show_plot_buttons(self)
 
-        label = Label(self, text="The clustering will plot all the datapoints. No choices to make.")
+        label = Label(self, text="The clustering will plot all the data points. No choices to make.")
         label.pack()
 
         cluster_button = ttk.Button(self, text="Plot", command=lambda: self.make_cluster(),
@@ -320,6 +338,10 @@ class ClusterPage(tk.Frame):
         for cluster_number in range(cluster_num):
             ax.scatter(centroids[:, 0], centroids[:, 1], centroids[:, 2], marker="x", s=150, linewidths=5, zorder=100,
                        c=color)
+
+        ax.set_xlabel('Temperature')
+        ax.set_ylabel('Humidity')
+        ax.set_zlabel('Brightness')
 
         plt.show()
 
