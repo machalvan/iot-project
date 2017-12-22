@@ -193,12 +193,15 @@ class LinePage(tk.Frame):
 
         x_var = get_list(x_label)
         y_var = get_list(y_label)
+
+        fit = np.polyfit(x_var, y_var, 1)
+        fit_fn = np.poly1d(fit)
         
         plt.xlabel(x_label)
         plt.ylabel(y_label)
         plt.title('Scatter diagram')
 
-        plt.plot([x_var], [y_var], 'ro')
+        plt.plot([x_var], [y_var], 'ro', x_var, fit_fn(x_var), '--k')
         plt.show()
 
 
