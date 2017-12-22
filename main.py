@@ -29,6 +29,7 @@ VAR2 = "Humidity"
 VAR3 = "Brightness"
 
 all_vars = (VAR1, VAR2, VAR3)
+all_vars_list = [VAR1, VAR2, VAR3]
 
 def show_title(self, title):
     label = Label(self, text=title, bg="gray")
@@ -42,22 +43,26 @@ def show_plot_buttons(self):
     summary_button = ttk.Button(
         self,
         text="Summary",
-        command=lambda: self.controller.show_frame(StartPage), cursor="hand2")
+        command=lambda: self.controller.show_frame(StartPage),
+        cursor="hand2")
 
     scatter_button = ttk.Button(
         self,
         text="Scatter",
-        command=lambda: self.controller.show_frame(LinePage), cursor="hand2")
+        command=lambda: self.controller.show_frame(LinePage),
+        cursor="hand2")
 
     pie_button = ttk.Button(
         self,
         text="Pie chart",
-        command=lambda: self.controller.show_frame(PiePage), cursor="hand2")
+        command=lambda: self.controller.show_frame(PiePage),
+        cursor="hand2")
 
     cluster_button = ttk.Button(
         self,
         text="Cluster chart",
-        command=lambda: self.controller.show_frame(ClusterPage), cursor="hand2")
+        command=lambda: self.controller.show_frame(ClusterPage),
+        cursor="hand2")
 
     summary_button.pack(anchor='w')
     scatter_button.pack(anchor='w')
@@ -82,7 +87,7 @@ def import_data(self):
             data3.append(int(row[2]))
         print("fyllt lista")
 
-    self.display_summery()
+    self.show_summery()
 
 
 def clear_lists():
@@ -135,12 +140,12 @@ class StartPage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
-        show_title(self, "Start page")
 
+        show_title(self, "Start page")
         show_import(self)
 
 
-    def display_summery(self):
+    def show_summery(self):
         if not self.summery_displayed:
             show_plot_buttons(self)
 
@@ -155,6 +160,25 @@ class StartPage(tk.Frame):
             meanT.pack()
             meanH.pack()
             meanB.pack()
+
+            fig, ax = plt.subplots()
+
+            # hide axes
+            fig.patch.set_visible(False)
+            ax.axis('off')
+            ax.axis('tight')
+
+            raw_data = {VAR1: data1, VAR2: data2, VAR3: data3}
+            df = pd.DataFrame(raw_data, columns=all_vars_list)
+
+            ax.table(cellText=df.values, colLabels=df.columns, loc='center')
+
+            fig.tight_layout()
+
+            # plt.show()
+            canvas = FigureCanvasTkAgg(fig, master=self)
+            canvas.get_tk_widget().pack()
+            canvas.draw()
 
             self.summery_displayed = True
 
@@ -246,8 +270,7 @@ class PiePage(tk.Frame):
         plt.close()
 
         raw_data = {VAR1: data1, VAR2: data2, VAR3: data3}
-        variables = [VAR1, VAR2, VAR3]
-        df = pd.DataFrame(raw_data, columns=variables)
+        df = pd.DataFrame(raw_data, columns=all_vars_list)
 
         variable = self.box1.get()
         '''
@@ -347,5 +370,6 @@ class ClusterPage(tk.Frame):
 
 
 app = Window()
-app.geometry("600x600+300+10")
+app.state('zoomed')
+#app.geometry("600x600+300+10")
 app.mainloop()
