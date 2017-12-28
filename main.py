@@ -111,8 +111,9 @@ class Window(tk.Tk):
         tk.Tk.wm_title(self, "Data Visualization GUI")
 
 
-        container = tk.Frame(self)
 
+
+        container = tk.Frame(self)
         container.pack(side="top", fill="both", expand=True)
 
         container.grid_rowconfigure(0, weight=1)
@@ -177,8 +178,11 @@ class StartPage(tk.Frame):
 
             # plt.show()
             canvas = FigureCanvasTkAgg(fig, master=self)
+
             canvas.get_tk_widget().pack()
             canvas.draw()
+
+
 
             self.summery_displayed = True
 
@@ -211,6 +215,7 @@ class LinePage(tk.Frame):
         self.scatter_button.pack()
 
     def scatter(self):
+        plt.close()
         x_label = self.box1.get()
         y_label = self.box2.get()
 
@@ -273,8 +278,8 @@ class PiePage(tk.Frame):
         df = pd.DataFrame(raw_data, columns=all_vars_list)
 
         variable = self.box1.get()
-        '''
-        if variable == 'Temperature':
+
+        if variable == VAR1:
             df['bins'] = pd.cut(df[variable],
                                 bins=[int(-30), int(-15), 0, 15, 30, 45],
                                 labels=["-30 - -15", "-14 - 0", "1 - 15", "16 - 30", "31 - 45"])
@@ -283,8 +288,8 @@ class PiePage(tk.Frame):
                                 bins=[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
                                 labels=["0 - 10", "11 - 20", "21 - 30", "31 - 40", "41 - 50", "51 - 60", "61 - 70",
                                         "71 - 80", "81 - 90", "91 - 100"])
-        '''
 
+        '''
         df['bins'] = pd.cut(df[variable],
                 bins=[-100, -90, -80, -70, -60, -50, -40, -30, -20, -10, 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
                 labels=["-100 - -91",
@@ -307,6 +312,7 @@ class PiePage(tk.Frame):
                         "71 - 80",
                         "81 - 90",
                         "91 - 100"])
+        '''
 
         plot = df.groupby('bins').size()
         print(plot)
@@ -371,5 +377,7 @@ class ClusterPage(tk.Frame):
 
 app = Window()
 app.state('zoomed')
+
 #app.geometry("600x600+300+10")
 app.mainloop()
+
