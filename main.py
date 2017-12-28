@@ -136,7 +136,7 @@ class Window(tk.Tk):
 
 
 class StartPage(tk.Frame):
-    summery_displayed = False
+    summery_packed = False
 
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
@@ -145,46 +145,56 @@ class StartPage(tk.Frame):
         show_title(self, "Start page")
         show_import(self)
 
+        self.label = Label(self)
+        self.entries = Label(self)
+        self.meanT = Label(self)
+        self.meanH = Label(self)
+        self.meanB = Label(self)
+
+
+
 
     def show_summery(self):
-        if not self.summery_displayed:
+        self.label["text"] = "Summery"
+        self.entries["text"] = "Total entries: " + str(len(data1))
+        self.meanT["text"] = "Mean temperature: " + str(self.calc_mean(data1))
+        self.meanH["text"] = "Mean humidity: " + str(self.calc_mean(data2))
+        self.meanB["text"] = "Mean brightness: " + str(self.calc_mean(data3))
+
+        print(data1)
+
+        fig, ax = plt.subplots()
+
+        # hide axes
+        fig.patch.set_visible(False)
+        ax.axis('off')
+        ax.axis('tight')
+
+        raw_data = {VAR1: data1, VAR2: data2, VAR3: data3}
+        df = pd.DataFrame(raw_data, columns=all_vars_list)
+
+        ax.table(cellText=df.values, colLabels=df.columns, loc='center')
+
+        fig.tight_layout()
+
+        # plt.show()
+        self.canvas = FigureCanvasTkAgg(fig, master=self)
+
+        #canvas.get_tk_widget().pack()
+        self.canvas.draw()
+
+        if not self.summery_packed:
             show_plot_buttons(self)
 
-            label = Label(self, text="Summary")
-            entries = Label(self, text="Total entries: " + str(len(data1)))
-            meanT = Label(self, text="Mean temperature: " + str(self.calc_mean(data1)))
-            meanH = Label(self, text="Mean humidity: " + str(self.calc_mean(data2)))
-            meanB = Label(self, text="Mean brightness: " + str(self.calc_mean(data3)))
+            self.label.pack()
+            self.entries.pack()
+            self.meanT.pack()
+            self.meanH.pack()
+            self.meanB.pack()
 
-            label.pack()
-            entries.pack()
-            meanT.pack()
-            meanH.pack()
-            meanB.pack()
+            self.canvas.get_tk_widget().pack()
 
-            fig, ax = plt.subplots()
-
-            # hide axes
-            fig.patch.set_visible(False)
-            ax.axis('off')
-            ax.axis('tight')
-
-            raw_data = {VAR1: data1, VAR2: data2, VAR3: data3}
-            df = pd.DataFrame(raw_data, columns=all_vars_list)
-
-            ax.table(cellText=df.values, colLabels=df.columns, loc='center')
-
-            fig.tight_layout()
-
-            # plt.show()
-            canvas = FigureCanvasTkAgg(fig, master=self)
-
-            canvas.get_tk_widget().pack()
-            canvas.draw()
-
-
-
-            self.summery_displayed = True
+        self.summery_packed = True
 
     def calc_mean(self, target):
         total = 0
