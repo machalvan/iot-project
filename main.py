@@ -163,6 +163,7 @@ class StartPage(tk.Frame):
 
         print(data1)
 
+        '''
         fig, ax = plt.subplots()
 
         # hide axes
@@ -182,6 +183,7 @@ class StartPage(tk.Frame):
 
         #canvas.get_tk_widget().pack()
         self.canvas.draw()
+        '''
 
         if not self.summery_packed:
             show_plot_buttons(self)
@@ -192,7 +194,7 @@ class StartPage(tk.Frame):
             self.meanH.pack()
             self.meanB.pack()
 
-            self.canvas.get_tk_widget().pack()
+            #self.canvas.get_tk_widget().pack()
 
         self.summery_packed = True
 
