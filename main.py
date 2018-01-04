@@ -79,7 +79,7 @@ def import_data(self):
     clear_lists()
 
     with open(filePath, 'r') as csvfile:
-        readCSV = csv.reader(csvfile, delimiter=',')
+        readCSV = csv.reader(csvfile, delimiter=';')
 
         for row in readCSV:
             data1.append(int(row[0]))
@@ -388,8 +388,8 @@ class ClusterPage(tk.Frame):
 
 
 app = Window()
-app.state('zoomed')
+#app.state('zoomed')
 
-#app.geometry("600x600+300+10")
+app.geometry("600x600+300+10")
 app.mainloop()
 
